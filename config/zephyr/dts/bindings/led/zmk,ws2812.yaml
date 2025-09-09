@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: MIT
+
+description: ZMK WS2812 RGB LED strip
+
+compatible: "zmk,ws2812"
+
+include: base.yaml
+
+properties:
+  label:
+    type: string
+    required: true
+    description: Human readable string describing the LED strip
+
+  gpios:
+    type: phandle-array
+    required: true
+    description: GPIO pin used to drive the LED strip
+
+  chain-length:
+    type: int
+    required: true
+    description: Number of LEDs in the chain
