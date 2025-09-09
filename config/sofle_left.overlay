@@ -5,12 +5,12 @@
 
     underglow: ws2812 {
         compatible = "zmk,underglow";
-        label = "Underglow";
+        label = "Underglow_Left";
 
         chain-length = <29>;
         color-mapping = <LED_COLOR_ID_RGB>;
 
-        /* D5 del Pro Micro → P0.24 en el nRF52840 */
-        data-gpios = <&pro_micro 5 0>;
+        /* Sofle RGB usa D5 → P0.24 en nRF52840 */
+        data-gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
     };
 };
