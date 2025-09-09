@@ -9,7 +9,7 @@
 
         gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
 
-        chain-length = <29>;
+        chain_length = <29>;
         color-mapping = <0 1 2>;
     };
 };
