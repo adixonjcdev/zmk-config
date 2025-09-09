@@ -7,6 +7,6 @@
         compatible = "zmk,ws2812";
         label = "WS2812";
         gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
-        chain-length = <29>;
+        zmk,chain-length = <29>;
     };
 };
