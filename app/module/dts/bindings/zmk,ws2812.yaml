@@ -1,0 +1,10 @@
+description: WS2812 compatible LED strip
+compatible: "zmk,ws2812"
+
+properties:
+  gpios:
+    type: phandle-array
+    required: true
+  chain-length:
+    type: int
+    required: true
