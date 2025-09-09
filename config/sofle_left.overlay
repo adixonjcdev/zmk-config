@@ -10,7 +10,7 @@
         chain-length = <29>;
         color-mapping = <LED_COLOR_ID_RGB>;
 
-        /* Pin F4 del Pro Micro, definido en arduino_pro_micro_pins_v6.dtsi */
-        data-gpios = <&pro_micro ARDUINO_PIN_F4 GPIO_ACTIVE_HIGH>;
+        /* Sofle RGB: DIN va al pin F4 del Pro Micro → en nRF52840 = P0.06 */
+        data-gpios = <&gpio0 0x06 GPIO_ACTIVE_HIGH>;
     };
 };
