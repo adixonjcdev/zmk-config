@@ -6,6 +6,8 @@
     ws2812: ws2812 {
         compatible = "zmk,ws2812";
         label = "WS2812";
-        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>; 
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;   // Ajusta al pin real
+        chain-length = <29>;                   // Aquí defines la cantidad de LEDs
+        status = "okay";
     };
 };
