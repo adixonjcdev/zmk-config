@@ -1,13 +1,13 @@
 / {
     chosen {
-        zmk,underglow = &led_strip;
+        zmk,underglow = &led_strip_left;
     };
 
-    led_strip: ws2812@0 {
+    led_strip_left: ws2812@0 {
         compatible = "worldsemi,ws2812";
         label = "Underglow_Left";
         chain-length = <29>;
-        color-mapping = <LED_COLOR_ID_RGB>;
+        color-mapping = <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>;
         gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
     };
 };

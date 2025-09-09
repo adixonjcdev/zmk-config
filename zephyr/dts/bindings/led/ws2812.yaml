@@ -14,4 +14,4 @@ properties:
   color-mapping:
     type: array
     required: false
-    description: Color channel order
+    description: Color channel order, e.g. <LED_COLOR_ID_RED LED_COLOR_ID_GREEN LED_COLOR_ID_BLUE>
