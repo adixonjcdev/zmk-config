@@ -3,12 +3,13 @@
         zmk,underglow = &underglow;
     };
 
-    underglow: led_strip {
+    underglow: underglow {
         compatible = "zmk,underglow";
-        label = "Underglow_Right";
+        label = "Underglow";
 
-        gpios = <&gpio0 6 0>;   // Pin P0.06, ajústalo si usas otro
-        chain-length = <29>;    // Número de LEDs reales
+        gpios = <&gpio0 6 0>;   /* Ajusta el pin DIN según tu PCB */
+        chain-length = <29>;    /* Número de LEDs */
         color-mapping = <0 1 2>;
+        status = "okay";
     };
 };
