@@ -3,7 +3,7 @@
         zmk,underglow = &ws2812;
     };
 
-    ws2812: ws2812@0 {
+    ws2812: ws2812 {
         compatible = "zmk,ws2812";
         label = "WS2812";
         gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
