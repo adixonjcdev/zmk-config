@@ -7,10 +7,10 @@
         compatible = "zmk,underglow";
         label = "Underglow";
 
-        chain-length = <29>;                  /* Número de LEDs */
-        color-mapping = <LED_COLOR_ID_RGB>;   /* SK6812 → RGB */
-        /* Aquí se define el driver */
-        spi-max-frequency = <4000000>;
+        chain-length = <29>;
+        color-mapping = <LED_COLOR_ID_RGB>;
+
+        /* Sofle RGB: el DIN de los LEDs está en F4 del Pro Micro */
         data-gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
     };
 };
