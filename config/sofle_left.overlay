@@ -3,13 +3,14 @@
         zmk,underglow = &underglow;
     };
 
-    underglow: led_strip {
+    underglow: ws2812 {
         compatible = "zmk,underglow";
-        label = "Underglow_Left";
+        label = "Underglow";
 
-        gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
-
-        chain_length = <29>;
-        color-mapping = <0 1 2>;
+        chain-length = <29>;                  /* Número de LEDs */
+        color-mapping = <LED_COLOR_ID_RGB>;   /* SK6812 → RGB */
+        /* Aquí se define el driver */
+        spi-max-frequency = <4000000>;
+        data-gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
     };
 };
