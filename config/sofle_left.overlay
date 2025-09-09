@@ -7,9 +7,10 @@
         compatible = "zmk,underglow";
         label = "Underglow_Left";
 
-        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        /* Pin F4 del Pro Micro → index 6 en &pro_micro */
+        gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
 
-        chain-length = <29>;   /* 29 LEDs en el lado izquierdo */
+        chain-length = <29>;
         color-mapping = <LED_COLOR_ID_RGB>;
     };
 };
