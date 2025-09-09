@@ -1,0 +1,19 @@
+description: WS2812/SK6812 LED strip
+
+compatible: "zmk,ws2812"
+
+properties:
+  chain-length:
+    type: int
+    required: true
+    description: Number of LEDs in the strip
+
+  color-mapping:
+    type: array
+    required: true
+    description: Channel to color mapping (RGB)
+
+  gpios:
+    type: phandle-array
+    required: true
+    description: Data output pin for the LED strip
