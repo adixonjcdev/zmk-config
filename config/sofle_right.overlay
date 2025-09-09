@@ -7,9 +7,8 @@
         compatible = "zmk,underglow";
         label = "Underglow_Right";
 
-        gpios = <&pro_micro 6 GPIO_ACTIVE_HIGH>;
-
-        chain-length = <29>;
-        color-mapping = <LED_COLOR_ID_RGB>;
+        gpios = <&gpio0 6 0>;   // Pin P0.06, ajústalo si usas otro
+        chain-length = <29>;    // Número de LEDs reales
+        color-mapping = <0 1 2>;
     };
 };
