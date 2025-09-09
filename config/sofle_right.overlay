@@ -1,12 +1,12 @@
 / {
     chosen {
-        zmk,underglow = &led_strip;
+        zmk,underglow = &ws2812;
     };
 
-    led_strip: ws2812 {
+    ws2812: ws2812@0 {
         compatible = "zmk,ws2812";
-        label = "Underglow";
-        gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
+        label = "WS2812";
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
         chain-length = <29>;
     };
 };
