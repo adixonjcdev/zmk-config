@@ -10,7 +10,7 @@
         chain-length = <29>;
         color-mapping = <LED_COLOR_ID_RGB>;
 
-        /* Sofle RGB usa el pin F4 (Pro Micro D5 → P0.24) para DIN */
-        data-gpios = <&pro_micro 5 GPIO_ACTIVE_HIGH>;
+        /* D5 del Pro Micro → P0.24 en el nRF52840 */
+        data-gpios = <&pro_micro 5 0>;
     };
 };
