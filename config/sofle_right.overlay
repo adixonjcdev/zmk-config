@@ -1,0 +1,15 @@
+/ {
+    chosen {
+        zmk,underglow = &underglow;
+    };
+
+    underglow: led_strip {
+        compatible = "zmk,underglow";
+        label = "Underglow_Right";
+
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+
+        chain-length = <29>;  
+        color-mapping = <LED_COLOR_ID_RGB>;
+    };
+};
