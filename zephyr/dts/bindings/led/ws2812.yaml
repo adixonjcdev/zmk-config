@@ -1,0 +1,14 @@
+description: WS2812 LED strip
+
+compatible: "worldsemi,ws2812"
+
+properties:
+  gpios:
+    type: phandle-array
+    required: true
+  chain-length:
+    type: int
+    required: true
+  color-mapping:
+    type: int-array
+    required: false

@@ -1,16 +1,13 @@
 / {
     chosen {
-        zmk,underglow = &underglow;
+        zmk,underglow = &led_strip;
     };
 
-    underglow: ws2812 {
-        compatible = "zmk,underglow";
-        label = "Underglow_Right";
-
+    led_strip: ws2812@0 {
+        compatible = "worldsemi,ws2812";
+        label = "Underglow";
         chain-length = <29>;
         color-mapping = <LED_COLOR_ID_RGB>;
-
-        /* Sofle RGB usa D5 → P0.24 en nRF52840 */
-        data-gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
+        gpios = <&gpio0 24 GPIO_ACTIVE_HIGH>;
     };
 };
