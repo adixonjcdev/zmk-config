@@ -3,11 +3,12 @@
         zmk,underglow = &ws2812;
     };
 
-    ws2812: ws2812 {
-        compatible = "zmk,ws2812";
+    ws2812: ws2812@0 {
+        compatible = "worldsemi,ws2812";       // 👈 binding oficial
         label = "WS2812";
-        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;   // Ajusta al pin real
-        chain-length = <29>;                   // Aquí defines la cantidad de LEDs
+        reg = <0>;                             // 👈 evita error de unit_address
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;   // 👈 tu pin de datos real
+        chain-length = <29>;                   // 👈 número de LEDs de este lado
         status = "okay";
     };
 };
