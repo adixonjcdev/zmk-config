@@ -4,11 +4,11 @@
     };
 
     ws2812: ws2812@0 {
-        compatible = "worldsemi,ws2812";       // 👈 binding oficial
+        compatible = "worldsemi,ws2812";
         label = "WS2812";
-        reg = <0>;                             // 👈 evita error de unit_address
-        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;   // 👈 tu pin de datos real
-        chain-length = <29>;                   // 👈 número de LEDs de este lado
+        reg = <0 0>;                       // << Aquí corregido
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        chain-length = <29>;
         status = "okay";
     };
 };
