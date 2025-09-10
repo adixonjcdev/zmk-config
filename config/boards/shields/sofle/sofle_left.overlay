@@ -1,6 +1,0 @@
- / {
-    chosen {
-        zmk,battery    = &builtin_fuel_gauge;
-        zmk,underglow  = &ws2812_ug;
-    };
-};
