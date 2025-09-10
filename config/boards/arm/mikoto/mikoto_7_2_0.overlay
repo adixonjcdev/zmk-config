@@ -36,7 +36,7 @@
         reg = <0>;
         spi-max-frequency = <8000000>;
 
-        /* Ajusta la cantidad real de LEDs */
+        /* Ajusta la cantidad real de LEDs de tu mitad */
         chain-length = <56>;
 
         /* SK6812 mini-e = GRB */
