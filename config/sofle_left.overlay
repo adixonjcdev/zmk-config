@@ -3,12 +3,9 @@
         zmk,underglow = &ws2812;
     };
 
-    ws2812: ws2812@0 {
+    ws2812: ws2812 {
         compatible = "worldsemi,ws2812";
         label = "WS2812";
-        reg = <0>;
-        #address-cells = <1>;
-        #size-cells = <0>;
         gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
         chain-length = <29>;
         color-mapping = <0 1 2>;
