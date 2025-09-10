@@ -1,27 +1,25 @@
 / {
     chosen {
-        zmk,underglow = &ws2812;
+        zmk,underglow = &underglow_strip;
     };
 
     ws2812: ws2812@0 {
-    compatible = "worldsemi,ws2812";
-    label = "WS2812";
-    reg = <0>;
-    #address-cells = <1>;
-    #size-cells = <0>;
-    gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
-    status = "okay";
-};
+        compatible = "worldsemi,ws2812";
+        label = "WS2812";
+        reg = <0>;
+        #address-cells = <1>;
+        #size-cells = <0>;
+        gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        status = "okay";
 
-&ws2812 {
-    led-strip {
-        label = "Underglow";
-        compatible = "led-strip";
-        chain-length = <29>;   // <- aquí lo pones, pero como child node
-        color-mapping = <LED_COLOR_ID_RED
-                         LED_COLOR_ID_GREEN
-                         LED_COLOR_ID_BLUE>;
+        underglow_strip: led-strip@0 {
+            compatible = "led-strip";
+            label = "Underglow";
+            reg = <0>;
+            chain-length = <29>;
+            color-mapping = <LED_COLOR_ID_RED
+                             LED_COLOR_ID_GREEN
+                             LED_COLOR_ID_BLUE>;
+        };
     };
-};
-
 };
