@@ -6,7 +6,9 @@
     ws2812: ws2812@0 {
         compatible = "worldsemi,ws2812";
         label = "WS2812";
-        reg = <0 0>;                       // << Aquí corregido
+        reg = <0>;                          // Solo address
+        #address-cells = <1>;               // Define solo address
+        #size-cells = <0>;                  // No necesita tamaño
         gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
         chain-length = <29>;
         status = "okay";
