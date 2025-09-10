@@ -1,6 +1,6 @@
 / {
     chosen {
-        zmk,underglow = &underglow_strip;
+        zmk,underglow = &ws2812;
     };
 
     ws2812: ws2812@0 {
@@ -10,14 +10,8 @@
         #address-cells = <1>;
         #size-cells = <0>;
         gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        chain-length = <29>;
+        color-mapping = <0 1 2>;
         status = "okay";
-
-        underglow_strip: led-strip@0 {
-            compatible = "led-strip";
-            label = "Underglow";
-            reg = <0>;
-            chain-length = <29>;
-            color-mapping = <0 1 2>;
-        };
     };
 };
