@@ -1,5 +1,5 @@
 /*
- * Mikoto v7.2.0 + Sofle: SK6812/WS2812 underglow (SPI)
+ * Mikoto v7.2.0 + Sofle: I2C fuel gauge + WS2812/SK6812 underglow (SPI)
  */
 
 #include "mikoto-pinctrl.dtsi"
@@ -7,10 +7,29 @@
 
 /* ==== PINCTRL ==== */
 &pinctrl {
+    /* I2C1 (fuel gauge MAX17048) */
+    i2c1_default: i2c1_default {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 23)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 19)>;
+            bias-pull-up;
+        };
+    };
+
+    i2c1_sleep: i2c1_sleep {
+        group1 {
+            psels = <NRF_PSEL(TWIM_SDA, 0, 23)>,
+                    <NRF_PSEL(TWIM_SCL, 0, 19)>;
+            low-power-enable;
+            bias-pull-up;
+        };
+    };
+
+    /* SPI1 para la tira (DIN en MOSI, aquí P0.06) */
     spi1_default: spi1_default {
         group1 {
-            psels = <NRF_PSEL(SPIM_SCK,  0, 2)>,   /* dummy */
-                    <NRF_PSEL(SPIM_MOSI, 0, 6)>;  /* DIN -> P0.06 */
+            psels = <NRF_PSEL(SPIM_SCK,  0, 2)>,   /* SCK dummy */
+                    <NRF_PSEL(SPIM_MOSI, 0, 6)>;  /* MOSI -> DIN LEDs */
         };
     };
 
@@ -23,7 +42,22 @@
     };
 };
 
-/* ==== SPI1 (LED STRIP) ==== */
+/* ==== I2C1 (Battery Fuel Gauge) ==== */
+&i2c1 {
+    status = "okay";
+    compatible = "nordic,nrf-twi";
+    pinctrl-0 = <&i2c1_default>;
+    pinctrl-1 = <&i2c1_sleep>;
+    pinctrl-names = "default", "sleep";
+
+    builtin_fuel_gauge: max17048@36 {
+        compatible = "zmk,maxim-max17048";
+        status = "okay";
+        reg = <0x36>;
+    };
+};
+
+/* ==== SPI1 (LED Strip) ==== */
 &spi1 {
     status = "okay";
     pinctrl-0 = <&spi1_default>;
@@ -36,13 +70,9 @@
         reg = <0>;
         spi-max-frequency = <8000000>;
 
-        /* Ajusta la cantidad real de LEDs de tu mitad */
         chain-length = <56>;
-
-        /* SK6812 mini-e = GRB */
         color-mapping = <1 0 2>;
 
-        /* Timings SPI */
         spi-one-frame  = <0x70>;
         spi-zero-frame = <0x40>;
     };

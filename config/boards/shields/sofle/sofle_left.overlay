@@ -1,8 +1,3 @@
-/ {
-    chosen {
-        // Nada de underglow aquí, solo el teclado
-    };
-};
 
 &kscan0 {
     row-gpios = <&gpio0 29 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>,
