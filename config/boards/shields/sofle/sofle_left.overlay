@@ -2,19 +2,39 @@
 
 / {
     chosen {
-        /* Matriz del escaneo de teclas */
-        zmk,kscan = &kscan0;
-        /* Asociación del underglow RGB */
+        /* Indica a ZMK cuál es el dispositivo de LEDs underglow */
         zmk,underglow = &ws2812_ug;
+        /* Asocia la matriz de escaneo de teclas */
+        zmk,kscan = &kscan0;
+    };
+
+    /* Definición del dispositivo SPI de los LEDs SK6812/WS2812 */
+    ws2812_ug: ws2812_ug@0 {
+        compatible = "worldsemi,ws2812-spi";
+        label = "WS2812_UG";
+
+        /* ⚠️ Pin de datos. Mikoto 7.2 suele usar P0.06 o P1.08 */
+        data-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+
+        /* Frecuencia SPI segura para SK6812 */
+        spi-max-frequency = <4000000>;
+
+        /* Mapeo de color estándar RGB */
+        color-mapping = <LED_COLOR_MAPPING_RGB>;
+
+        /* Longitud de la tira del Sofle RGB (2x36 = 72) */
+        chain-length = <72>;
+
+        status = "okay";
     };
 };
 
-/* --- Ajustes de transformación del lado izquierdo --- */
+/* Desplazamiento de columnas (izquierda) */
 &default_transform {
     col-offset = <6>;
 };
 
-/* --- Definición de pines de columnas para el Sofle --- */
+/* Pines de columnas para Sofle */
 &kscan0 {
     col-gpios =
         <&pro_micro 10 GPIO_ACTIVE_HIGH>,
@@ -25,33 +45,7 @@
         <&pro_micro 19 GPIO_ACTIVE_HIGH>;
 };
 
-/* --- Habilitar encoder del lado derecho --- */
+/* Habilitar encoder derecho */
 &right_encoder {
-    status = "okay";
-};
-
-/* --- Configuración del underglow (LED strip SK6812) --- */
-&ws2812_ug {
-    compatible = "worldsemi,sk6812-spi";
-    label = "LED Strip";
-
-    /* Número total de LEDs del Sofle RGB v2.1 */
-    chain-length = <72>;
-
-    /* Frecuencia SPI segura para nRF52840 */
-    spi-max-frequency = <4000000>;
-
-    /* ⚠️ Prueba primero con P0.06 (recomendado por ZMK para Mikoto)
-       Si no funciona, cambia por una de estas opciones:
-       - <&gpio0 15 GPIO_ACTIVE_HIGH>
-       - <&gpio1 2 GPIO_ACTIVE_HIGH>
-       - <&gpio1 8 GPIO_ACTIVE_HIGH>
-    */
-    data-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
-
-    /* Mapeo de color RGB (sin canal blanco) */
-    color-mapping = <LED_COLOR_MAPPING_RGB>;
-
-    /* Opcional: efectos extendidos */
     status = "okay";
 };
