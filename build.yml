@@ -1,0 +1,39 @@
+name: Build ZMK Firmware
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: zmkfirmware/zmk-build-arm:3.6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Build left half
+        run: |
+          west init -l config
+          west update
+          west build -p -b mikoto -d build/left \
+            -DSHIELD=sofle_left \
+            -DZMK_CONFIG=$(pwd)/config
+
+      - name: Build right half
+        run: |
+          west build -p -b mikoto -d build/right \
+            -DSHIELD=sofle_right \
+            -DZMK_CONFIG=$(pwd)/config
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: zmk-firmware
+          path: |
+            build/left/zephyr/zmk.uf2
+            build/right/zephyr/zmk.uf2
