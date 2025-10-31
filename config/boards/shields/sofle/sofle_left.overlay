@@ -2,18 +2,16 @@
 
 / {
     chosen {
-        /* Define el dispositivo de escaneo y el de los LEDs RGB */
         zmk,kscan = &kscan0;
         zmk,underglow = &led_strip;
     };
 
-    /* Nodo del strip RGB (72 SK6812 Mini-E) */
-    led_strip: ws2812_ug@0 {
+    led_strip: led_strip@0 {
         compatible = "worldsemi,ws2812-spi";
-        label = "WS2812_UG";
+        label = "LED_STRIP";
 
-        /* ⚠️ Pin de datos: Mikoto 7.2 usa típicamente P0.06, puedes probar P0.15 o P1.08 */
-        data-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
+        /* ⚠️ Mikoto v7.2 suele usar P0.15 o P0.06 para datos RGB */
+        data-gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
 
         spi-max-frequency = <4000000>;
         color-mapping = <LED_COLOR_MAPPING_RGB>;
@@ -22,12 +20,10 @@
     };
 };
 
-/* Ajuste de columnas de la mitad izquierda */
 &default_transform {
     col-offset = <6>;
 };
 
-/* Pines de columnas del Sofle */
 &kscan0 {
     col-gpios =
         <&pro_micro 10 GPIO_ACTIVE_HIGH>,
@@ -38,7 +34,6 @@
         <&pro_micro 19 GPIO_ACTIVE_HIGH>;
 };
 
-/* Habilita el encoder derecho (solo aplica en left overlay) */
 &right_encoder {
     status = "okay";
 };
