@@ -2,39 +2,32 @@
 
 / {
     chosen {
-        /* Indica a ZMK cuál es el dispositivo de LEDs underglow */
-        zmk,underglow = &ws2812_ug;
-        /* Asocia la matriz de escaneo de teclas */
+        /* Define el dispositivo de escaneo y el de los LEDs RGB */
         zmk,kscan = &kscan0;
+        zmk,underglow = &led_strip;
     };
 
-    /* Definición del dispositivo SPI de los LEDs SK6812/WS2812 */
-    ws2812_ug: ws2812_ug@0 {
+    /* Nodo del strip RGB (72 SK6812 Mini-E) */
+    led_strip: ws2812_ug@0 {
         compatible = "worldsemi,ws2812-spi";
         label = "WS2812_UG";
 
-        /* ⚠️ Pin de datos. Mikoto 7.2 suele usar P0.06 o P1.08 */
+        /* ⚠️ Pin de datos: Mikoto 7.2 usa típicamente P0.06, puedes probar P0.15 o P1.08 */
         data-gpios = <&gpio0 6 GPIO_ACTIVE_HIGH>;
 
-        /* Frecuencia SPI segura para SK6812 */
         spi-max-frequency = <4000000>;
-
-        /* Mapeo de color estándar RGB */
         color-mapping = <LED_COLOR_MAPPING_RGB>;
-
-        /* Longitud de la tira del Sofle RGB (2x36 = 72) */
         chain-length = <72>;
-
         status = "okay";
     };
 };
 
-/* Desplazamiento de columnas (izquierda) */
+/* Ajuste de columnas de la mitad izquierda */
 &default_transform {
     col-offset = <6>;
 };
 
-/* Pines de columnas para Sofle */
+/* Pines de columnas del Sofle */
 &kscan0 {
     col-gpios =
         <&pro_micro 10 GPIO_ACTIVE_HIGH>,
@@ -45,7 +38,7 @@
         <&pro_micro 19 GPIO_ACTIVE_HIGH>;
 };
 
-/* Habilitar encoder derecho */
+/* Habilita el encoder derecho (solo aplica en left overlay) */
 &right_encoder {
     status = "okay";
 };
