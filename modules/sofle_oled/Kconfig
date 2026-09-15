@@ -1,0 +1,4 @@
+config SOFLE_OLED
+    bool "Sofle custom OLED"
+    default y
+    depends on ZMK_DISPLAY
