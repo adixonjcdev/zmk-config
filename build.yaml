@@ -6,9 +6,6 @@ include:
     cmake-args: >-
       -DCONFIG_ZMK_WPM=y
       -DCONFIG_ZMK_WIDGET_WPM_STATUS=y
-      -DCONFIG_ZMK_DISPLAY_STATUS_SCREEN_CUSTOM=y
-      -DCONFIG_ZMK_DISPLAY_WORK_QUEUE_DEDICATED=y
-      -DZMK_EXTRA_MODULES=/__w/zmk-config/zmk-config/modules/sofle_oled
 
   - board: nice_nano//zmk
     shield: sofle_right
