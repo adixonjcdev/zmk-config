@@ -3,8 +3,13 @@ from PIL import Image
 INPUT = "logo_pixel.png"
 OUTPUT = "modules/sofle_oled/src/logo.h"
 
-MAX_WIDTH = 48
-MAX_HEIGHT = 30
+# Dejamos aire alrededor del logo dentro del OLED 128x32.
+MAX_WIDTH = 40
+MAX_HEIGHT = 26
+
+# Umbral de cobertura.
+# Un píxel debe tener al menos esta opacidad para encenderse.
+ALPHA_THRESHOLD = 128
 
 
 # ============================================================
@@ -15,89 +20,75 @@ img = Image.open(INPUT).convert("RGBA")
 
 
 # ============================================================
-# DETECTAR ÁREA VISIBLE
+# ENCONTRAR EL CONTENIDO REAL
 #
-# IMPORTANTE:
-# No comprobamos el color del píxel.
-#
-# El logo contiene elementos blancos y naranjas, por lo que
-# usar RGB para determinar si un píxel pertenece al logo
-# eliminaría las partes blancas.
-#
-# Aquí solamente importa el canal alpha:
-#
-# alpha > 10  -> pertenece al logo
-# alpha <= 10 -> transparente / fondo
+# Aquí NO importa si el logo es naranja, blanco, negro, etc.
+# Solamente importa que el píxel no sea transparente.
 # ============================================================
 
-pixels = img.load()
+alpha = img.getchannel("A")
 
-xs = []
-ys = []
+bbox = alpha.getbbox()
 
-for y in range(img.height):
-    for x in range(img.width):
-
-        r, g, b, a = pixels[x, y]
-
-        if a > 10:
-            xs.append(x)
-            ys.append(y)
-
-
-if not xs:
+if bbox is None:
     raise RuntimeError(
         "No se encontró contenido visible en la imagen"
     )
 
+img = img.crop(bbox)
 
-# ============================================================
-# RECORTAR ESPACIO TRANSPARENTE
-# ============================================================
+original_width, original_height = img.size
 
-bbox = (
-    min(xs),
-    min(ys),
-    max(xs) + 1,
-    max(ys) + 1,
+print(
+    f"Original recortado: "
+    f"{original_width}x{original_height}"
 )
 
-img = img.crop(bbox)
+
+# ============================================================
+# CALCULAR TAMAÑO FINAL
+#
+# Conservamos estrictamente la relación de aspecto.
+# ============================================================
+
+scale = min(
+    MAX_WIDTH / original_width,
+    MAX_HEIGHT / original_height
+)
+
+width = max(
+    1,
+    round(original_width * scale)
+)
+
+height = max(
+    1,
+    round(original_height * scale)
+)
+
+print(
+    f"Logo final: {width}x{height}"
+)
 
 
 # ============================================================
 # ESCALAR
 #
-# Conservamos la proporción original del isotipo.
+# LANCZOS genera buenos bordes al reducir.
 #
-# Nunca será mayor que:
-#
-# 48 px de ancho
-# 30 px de alto
+# Los píxeles semitransparentes que produce LANCZOS se
+# conservarán temporalmente y después decidiremos cuáles
+# sobreviven al convertir a 1 bit.
 # ============================================================
 
-img.thumbnail(
-    (MAX_WIDTH, MAX_HEIGHT),
+img = img.resize(
+    (width, height),
     Image.Resampling.LANCZOS
 )
 
-width, height = img.size
-
-print(f"Logo final: {width}x{height}")
-
 
 # ============================================================
-# CONVERTIR A BITMAP MONOCROMÁTICO I1
-#
-# Cada píxel necesita solamente 1 bit.
-#
-# Ejemplo:
-#
-# 45 px de ancho
-#
-# ceil(45 / 8) = 6 bytes por fila
-#
-# LVGL llama a esto "stride".
+# BITMAP I1
 # ============================================================
 
 stride = (width + 7) // 8
@@ -108,38 +99,40 @@ bitmap = bytearray(
 
 
 # ============================================================
-# GENERAR PIXELES
+# CONVERSIÓN A 1 BIT
 #
-# IMPORTANTE:
+# Usamos exclusivamente ALPHA.
 #
-# Ya NO comprobamos:
+# Esto es importante porque el isotipo tiene:
 #
-#     min(r, g, b) < 245
+#   naranja -> logo
+#   blanco  -> logo
 #
-# porque eso eliminaba el blanco.
+# Ambos deben convertirse exactamente igual.
 #
-# Ahora:
+# La diferencia con nuestra versión anterior es que ya no
+# aceptamos prácticamente cualquier píxel semitransparente.
 #
-# naranja     -> ON
-# blanco      -> ON
-# negro       -> ON
-# cualquier
-# otro color  -> ON
+# Con threshold 128:
 #
-# transparente -> OFF
+# alpha 255 -> ON
+# alpha 200 -> ON
+# alpha 128 -> ON
+# alpha  80 -> OFF
+# alpha  20 -> OFF
 #
-# Para el OLED monocromático todos los colores visibles
-# terminan convertidos en píxeles encendidos.
+# Esto limpia bastante las diagonales después del escalado.
 # ============================================================
 
 for y in range(height):
+
     for x in range(width):
 
-        r, g, b, a = img.getpixel((x, y))
+        _, _, _, a = img.getpixel(
+            (x, y)
+        )
 
-        visible = a > 30
-
-        if visible:
+        if a >= ALPHA_THRESHOLD:
 
             byte_index = (
                 y * stride
@@ -158,44 +151,21 @@ for y in range(height):
 # ============================================================
 # PALETA LVGL I1
 #
-# I1 utiliza dos colores:
+# 0 = transparente
+# 1 = negro lógico opaco
 #
-# índice 0 -> transparente
-# índice 1 -> negro lógico completamente opaco
-#
-# En nuestro SSD1306:
-#
-# negro lógico -> píxel físicamente encendido
-#
-# Por eso el logo aparecerá blanco sobre fondo negro.
+# En nuestro SSD1306 negro lógico corresponde al píxel
+# físicamente encendido.
 # ============================================================
 
 palette = bytearray([
-    # --------------------------------
-    # índice 0
-    # transparente
-    # --------------------------------
-    0x00,
-    0x00,
-    0x00,
-    0x00,
+    # índice 0: transparente
+    0x00, 0x00, 0x00, 0x00,
 
-    # --------------------------------
-    # índice 1
-    # negro lógico opaco
-    # --------------------------------
-    0x00,
-    0x00,
-    0x00,
-    0xFF,
+    # índice 1: negro lógico / opaco
+    0x00, 0x00, 0x00, 0xFF,
 ])
 
-
-# ============================================================
-# DATOS COMPLETOS PARA LVGL
-#
-# [paleta][bitmap]
-# ============================================================
 
 data = palette + bitmap
 
@@ -210,21 +180,12 @@ with open(
     encoding="utf-8"
 ) as f:
 
-    f.write(
-        "#pragma once\n\n"
-    )
+    f.write("#pragma once\n\n")
+    f.write("#include <lvgl.h>\n\n")
 
     f.write(
-        "#include <lvgl.h>\n\n"
-    )
-
-
-    # --------------------------------------------------------
-    # ARRAY DE PIXELES
-    # --------------------------------------------------------
-
-    f.write(
-        "static const uint8_t adx_logo_map[] = {\n"
+        "static const uint8_t "
+        "adx_logo_map[] = {\n"
     )
 
     for i in range(
@@ -235,32 +196,25 @@ with open(
 
         chunk = data[i:i + 16]
 
-        f.write(
-            "    "
+        values = ", ".join(
+            f"0x{value:02X}"
+            for value in chunk
         )
 
         f.write(
-            ", ".join(
-                f"0x{value:02X}"
-                for value in chunk
-            )
+            f"    {values},\n"
         )
 
-        f.write(
-            ",\n"
-        )
-
-    f.write(
-        "};\n\n"
-    )
+    f.write("};\n\n")
 
 
-    # --------------------------------------------------------
+    # ========================================================
     # DESCRIPTOR LVGL 9
-    # --------------------------------------------------------
+    # ========================================================
 
     f.write(
-        "static const lv_image_dsc_t adx_logo = {\n"
+        "static const lv_image_dsc_t "
+        "adx_logo = {\n"
     )
 
     f.write(
@@ -268,11 +222,13 @@ with open(
     )
 
     f.write(
-        "        .magic = LV_IMAGE_HEADER_MAGIC,\n"
+        "        .magic = "
+        "LV_IMAGE_HEADER_MAGIC,\n"
     )
 
     f.write(
-        "        .cf = LV_COLOR_FORMAT_I1,\n"
+        "        .cf = "
+        "LV_COLOR_FORMAT_I1,\n"
     )
 
     f.write(
@@ -300,7 +256,8 @@ with open(
     )
 
     f.write(
-        "    .data_size = sizeof(adx_logo_map),\n"
+        "    .data_size = "
+        "sizeof(adx_logo_map),\n"
     )
 
     f.write(
@@ -317,8 +274,16 @@ with open(
 
 
 # ============================================================
-# INFORMACIÓN
+# INFORMACIÓN FINAL
 # ============================================================
+
+print()
+print("Conversión terminada")
+print("--------------------")
+
+print(
+    f"Tamaño: {width}x{height}"
+)
 
 print(
     f"Stride: {stride} bytes"
@@ -333,5 +298,5 @@ print(
 )
 
 print(
-    f"Generado: {OUTPUT}"
+    f"Archivo: {OUTPUT}"
 )
