@@ -3,15 +3,10 @@
 
 #include <zmk/event_manager.h>
 #include <zmk/events/hid_indicators_changed.h>
-#include <zmk/hid_indicators.h>
-#include <zmk/hid_indicators_types.h>
 
 #include "logo.h"
 
 
-/*
- * Bits estándar de los indicadores HID.
- */
 #define HID_NUM_LOCK    BIT(0)
 #define HID_CAPS_LOCK   BIT(1)
 #define HID_SCROLL_LOCK BIT(2)
@@ -23,13 +18,18 @@ static lv_obj_t *scroll_label;
 
 
 /*
+ * Guardamos el último estado recibido desde el central.
+ */
+static zmk_hid_indicators_t current_indicators;
+
+
+/*
  * ============================================================
- * ACTUALIZAR INDICADORES
+ * ACTUALIZAR OLED
  * ============================================================
  */
 
 static void update_indicators(void) {
-
     if (
         caps_label == NULL ||
         num_label == NULL ||
@@ -38,32 +38,23 @@ static void update_indicators(void) {
         return;
     }
 
-    zmk_hid_indicators_t indicators =
-        zmk_hid_indicators_get_current_profile();
-
-
-    /*
-     * Si está activo mostramos el texto.
-     * Si está apagado mostramos "".
-     */
-
     lv_label_set_text(
         caps_label,
-        (indicators & HID_CAPS_LOCK)
+        (current_indicators & HID_CAPS_LOCK)
             ? "CAPS"
             : ""
     );
 
     lv_label_set_text(
         num_label,
-        (indicators & HID_NUM_LOCK)
+        (current_indicators & HID_NUM_LOCK)
             ? "NUM"
             : ""
     );
 
     lv_label_set_text(
         scroll_label,
-        (indicators & HID_SCROLL_LOCK)
+        (current_indicators & HID_SCROLL_LOCK)
             ? "SCRL"
             : ""
     );
@@ -74,25 +65,24 @@ static void update_indicators(void) {
  * ============================================================
  * EVENTO HID
  *
- * Windows/Linux/etc. informa al teclado cuando cambia uno
- * de los estados:
+ * El central recibe el estado desde Windows y ZMK lo envía
+ * al peripheral.
  *
- * CAPS
- * NUM
- * SCROLL
+ * El peripheral genera zmk_hid_indicators_changed.
  * ============================================================
  */
 
-static int oled_indicators_listener(
-    const zmk_event_t *eh
-) {
+static int oled_indicators_listener(const zmk_event_t *eh) {
+    const struct zmk_hid_indicators_changed *event =
+        as_zmk_hid_indicators_changed(eh);
 
-    if (
-        as_zmk_hid_indicators_changed(eh)
-        != NULL
-    ) {
-        update_indicators();
+    if (event == NULL) {
+        return ZMK_EV_EVENT_BUBBLE;
     }
+
+    current_indicators = event->indicators;
+
+    update_indicators();
 
     return ZMK_EV_EVENT_BUBBLE;
 }
@@ -111,19 +101,17 @@ ZMK_SUBSCRIPTION(
 
 /*
  * ============================================================
- * ESTILO COMÚN DE LOS INDICADORES
+ * ESTILO
  * ============================================================
  */
 
-static void style_indicator(
-    lv_obj_t *label
-) {
-
+static void style_indicator(lv_obj_t *label) {
     lv_obj_remove_style_all(label);
 
     /*
-     * SSD1306:
-     * BLACK lógico = píxel blanco físicamente encendido.
+     * En nuestro SSD1306:
+     *
+     * BLACK lógico = píxel físicamente encendido.
      */
 
     lv_obj_set_style_text_color(
@@ -148,20 +136,15 @@ static void style_indicator(
 
 /*
  * ============================================================
- * PANTALLA OLED DERECHA
+ * OLED DERECHO
  * ============================================================
  */
 
 lv_obj_t *zmk_display_status_screen(void) {
-
-    lv_obj_t *screen =
-        lv_obj_create(NULL);
-
+    lv_obj_t *screen = lv_obj_create(NULL);
 
     /*
-     * ========================================================
-     * FONDO
-     * ========================================================
+     * Fondo
      */
 
     lv_obj_remove_style_all(screen);
@@ -181,14 +164,13 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     /*
      * ========================================================
-     * LOGO ADX
+     * LOGO
      *
-     * Lo dejamos EXACTAMENTE centrado.
+     * Volvemos a dejarlo CENTRADO.
      * ========================================================
      */
 
-    lv_obj_t *logo =
-        lv_image_create(screen);
+    lv_obj_t *logo = lv_image_create(screen);
 
     lv_image_set_src(
         logo,
@@ -199,19 +181,13 @@ lv_obj_t *zmk_display_status_screen(void) {
 
 
     /*
-     * ========================================================
-     * CAPS LOCK
-     *
-     * Esquina superior izquierda.
-     * ========================================================
+     * CAPS
+     * Superior izquierda
      */
 
-    caps_label =
-        lv_label_create(screen);
+    caps_label = lv_label_create(screen);
 
-    style_indicator(
-        caps_label
-    );
+    style_indicator(caps_label);
 
     lv_obj_align(
         caps_label,
@@ -222,19 +198,13 @@ lv_obj_t *zmk_display_status_screen(void) {
 
 
     /*
-     * ========================================================
-     * NUM LOCK
-     *
-     * Esquina superior derecha.
-     * ========================================================
+     * NUM
+     * Superior derecha
      */
 
-    num_label =
-        lv_label_create(screen);
+    num_label = lv_label_create(screen);
 
-    style_indicator(
-        num_label
-    );
+    style_indicator(num_label);
 
     lv_obj_align(
         num_label,
@@ -245,19 +215,13 @@ lv_obj_t *zmk_display_status_screen(void) {
 
 
     /*
-     * ========================================================
-     * SCROLL LOCK
-     *
-     * Esquina inferior derecha.
-     * ========================================================
+     * SCROLL
+     * Inferior derecha
      */
 
-    scroll_label =
-        lv_label_create(screen);
+    scroll_label = lv_label_create(screen);
 
-    style_indicator(
-        scroll_label
-    );
+    style_indicator(scroll_label);
 
     lv_obj_align(
         scroll_label,
@@ -268,11 +232,15 @@ lv_obj_t *zmk_display_status_screen(void) {
 
 
     /*
-     * Leer el estado inicial.
+     * Inicialmente todos apagados.
+     *
+     * En cuanto el central nos envíe el estado,
+     * el listener actualizará la pantalla.
      */
 
-    update_indicators();
+    current_indicators = 0;
 
+    update_indicators();
 
     return screen;
 }
