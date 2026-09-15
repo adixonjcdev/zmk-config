@@ -3,6 +3,7 @@ include:
   - board: nice_nano//zmk
     shield: sofle_left
     artifact-name: sofle_left_supermini
+    cmake-args: -DCONFIG_ZMK_WPM=y -DCONFIG_ZMK_WIDGET_WPM_STATUS=y
 
   - board: nice_nano//zmk
     shield: sofle_right
