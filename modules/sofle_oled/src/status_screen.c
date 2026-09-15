@@ -121,7 +121,7 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     lv_obj_set_style_text_font(
         layer_label,
-        &lv_font_montserrat_10,
+        &lv_font_montserrat_14,
         LV_PART_MAIN
     );
 
@@ -131,7 +131,7 @@ lv_obj_t *zmk_display_status_screen(void) {
         layer_label,
         LV_ALIGN_TOP_RIGHT,
         2,
-        0
+        -1
     );
 
     return screen;
