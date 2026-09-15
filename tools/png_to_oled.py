@@ -8,10 +8,27 @@ MAX_HEIGHT = 30
 
 
 # ============================================================
-# CARGAR Y RECORTAR
+# CARGAR IMAGEN
 # ============================================================
 
 img = Image.open(INPUT).convert("RGBA")
+
+
+# ============================================================
+# DETECTAR ÁREA VISIBLE
+#
+# IMPORTANTE:
+# No comprobamos el color del píxel.
+#
+# El logo contiene elementos blancos y naranjas, por lo que
+# usar RGB para determinar si un píxel pertenece al logo
+# eliminaría las partes blancas.
+#
+# Aquí solamente importa el canal alpha:
+#
+# alpha > 10  -> pertenece al logo
+# alpha <= 10 -> transparente / fondo
+# ============================================================
 
 pixels = img.load()
 
@@ -20,14 +37,23 @@ ys = []
 
 for y in range(img.height):
     for x in range(img.width):
+
         r, g, b, a = pixels[x, y]
 
-        if a > 10 and min(r, g, b) < 240:
+        if a > 10:
             xs.append(x)
             ys.append(y)
 
+
 if not xs:
-    raise RuntimeError("No se encontró contenido visible")
+    raise RuntimeError(
+        "No se encontró contenido visible en la imagen"
+    )
+
+
+# ============================================================
+# RECORTAR ESPACIO TRANSPARENTE
+# ============================================================
 
 bbox = (
     min(xs),
@@ -41,6 +67,13 @@ img = img.crop(bbox)
 
 # ============================================================
 # ESCALAR
+#
+# Conservamos la proporción original del isotipo.
+#
+# Nunca será mayor que:
+#
+# 48 px de ancho
+# 30 px de alto
 # ============================================================
 
 img.thumbnail(
@@ -54,79 +87,157 @@ print(f"Logo final: {width}x{height}")
 
 
 # ============================================================
-# CONVERTIR A I1
+# CONVERTIR A BITMAP MONOCROMÁTICO I1
 #
-# LVGL I1 necesita:
+# Cada píxel necesita solamente 1 bit.
 #
-# 2 colores de paleta = 8 bytes
-# +
-# bitmap 1-bit
+# Ejemplo:
 #
-# Cada fila ocupa ceil(width / 8) bytes.
+# 45 px de ancho
+#
+# ceil(45 / 8) = 6 bytes por fila
+#
+# LVGL llama a esto "stride".
 # ============================================================
 
 stride = (width + 7) // 8
 
-bitmap = bytearray(stride * height)
+bitmap = bytearray(
+    stride * height
+)
+
+
+# ============================================================
+# GENERAR PIXELES
+#
+# IMPORTANTE:
+#
+# Ya NO comprobamos:
+#
+#     min(r, g, b) < 245
+#
+# porque eso eliminaba el blanco.
+#
+# Ahora:
+#
+# naranja     -> ON
+# blanco      -> ON
+# negro       -> ON
+# cualquier
+# otro color  -> ON
+#
+# transparente -> OFF
+#
+# Para el OLED monocromático todos los colores visibles
+# terminan convertidos en píxeles encendidos.
+# ============================================================
 
 for y in range(height):
     for x in range(width):
 
         r, g, b, a = img.getpixel((x, y))
 
-        visible = (
-            a > 30 and
-            min(r, g, b) < 245
-        )
+        visible = a > 30
 
         if visible:
-            byte_index = y * stride + (x // 8)
-            bit_index = 7 - (x % 8)
 
-            bitmap[byte_index] |= (1 << bit_index)
+            byte_index = (
+                y * stride
+                + (x // 8)
+            )
+
+            bit_index = (
+                7 - (x % 8)
+            )
+
+            bitmap[byte_index] |= (
+                1 << bit_index
+            )
 
 
 # ============================================================
-# PALETA I1
+# PALETA LVGL I1
 #
-# Color 0: transparente
-# Color 1: negro lógico
+# I1 utiliza dos colores:
 #
-# En nuestro SSD1306 negro lógico termina siendo píxel blanco
-# físicamente encendido.
+# índice 0 -> transparente
+# índice 1 -> negro lógico completamente opaco
 #
-# LVGL almacena la paleta como ARGB8888.
+# En nuestro SSD1306:
+#
+# negro lógico -> píxel físicamente encendido
+#
+# Por eso el logo aparecerá blanco sobre fondo negro.
 # ============================================================
 
 palette = bytearray([
-    # índice 0 -> transparente
-    0x00, 0x00, 0x00, 0x00,
+    # --------------------------------
+    # índice 0
+    # transparente
+    # --------------------------------
+    0x00,
+    0x00,
+    0x00,
+    0x00,
 
-    # índice 1 -> negro completamente opaco
-    0x00, 0x00, 0x00, 0xFF,
+    # --------------------------------
+    # índice 1
+    # negro lógico opaco
+    # --------------------------------
+    0x00,
+    0x00,
+    0x00,
+    0xFF,
 ])
+
+
+# ============================================================
+# DATOS COMPLETOS PARA LVGL
+#
+# [paleta][bitmap]
+# ============================================================
 
 data = palette + bitmap
 
 
 # ============================================================
-# GENERAR HEADER
+# GENERAR logo.h
 # ============================================================
 
-with open(OUTPUT, "w", encoding="utf-8") as f:
+with open(
+    OUTPUT,
+    "w",
+    encoding="utf-8"
+) as f:
 
-    f.write("#pragma once\n\n")
-    f.write("#include <lvgl.h>\n\n")
+    f.write(
+        "#pragma once\n\n"
+    )
+
+    f.write(
+        "#include <lvgl.h>\n\n"
+    )
+
+
+    # --------------------------------------------------------
+    # ARRAY DE PIXELES
+    # --------------------------------------------------------
 
     f.write(
         "static const uint8_t adx_logo_map[] = {\n"
     )
 
-    for i in range(0, len(data), 16):
+    for i in range(
+        0,
+        len(data),
+        16
+    ):
 
         chunk = data[i:i + 16]
 
-        f.write("    ")
+        f.write(
+            "    "
+        )
 
         f.write(
             ", ".join(
@@ -135,23 +246,58 @@ with open(OUTPUT, "w", encoding="utf-8") as f:
             )
         )
 
-        f.write(",\n")
+        f.write(
+            ",\n"
+        )
 
-    f.write("};\n\n")
+    f.write(
+        "};\n\n"
+    )
+
+
+    # --------------------------------------------------------
+    # DESCRIPTOR LVGL 9
+    # --------------------------------------------------------
 
     f.write(
         "static const lv_image_dsc_t adx_logo = {\n"
     )
 
-    f.write("    .header = {\n")
-    f.write("        .magic = LV_IMAGE_HEADER_MAGIC,\n")
-    f.write("        .cf = LV_COLOR_FORMAT_I1,\n")
-    f.write("        .flags = 0,\n")
-    f.write(f"        .w = {width},\n")
-    f.write(f"        .h = {height},\n")
-    f.write(f"        .stride = {stride},\n")
-    f.write("        .reserved_2 = 0,\n")
-    f.write("    },\n")
+    f.write(
+        "    .header = {\n"
+    )
+
+    f.write(
+        "        .magic = LV_IMAGE_HEADER_MAGIC,\n"
+    )
+
+    f.write(
+        "        .cf = LV_COLOR_FORMAT_I1,\n"
+    )
+
+    f.write(
+        "        .flags = 0,\n"
+    )
+
+    f.write(
+        f"        .w = {width},\n"
+    )
+
+    f.write(
+        f"        .h = {height},\n"
+    )
+
+    f.write(
+        f"        .stride = {stride},\n"
+    )
+
+    f.write(
+        "        .reserved_2 = 0,\n"
+    )
+
+    f.write(
+        "    },\n"
+    )
 
     f.write(
         "    .data_size = sizeof(adx_logo_map),\n"
@@ -165,4 +311,27 @@ with open(OUTPUT, "w", encoding="utf-8") as f:
         "    .reserved = NULL,\n"
     )
 
-    f.write("};\n")
+    f.write(
+        "};\n"
+    )
+
+
+# ============================================================
+# INFORMACIÓN
+# ============================================================
+
+print(
+    f"Stride: {stride} bytes"
+)
+
+print(
+    f"Bitmap: {len(bitmap)} bytes"
+)
+
+print(
+    f"Datos LVGL: {len(data)} bytes"
+)
+
+print(
+    f"Generado: {OUTPUT}"
+)
