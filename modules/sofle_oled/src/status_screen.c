@@ -29,14 +29,16 @@ static void update_layer_label(void) {
     zmk_keymap_layer_index_t layer =
         zmk_keymap_highest_layer_active();
 
-    const char *name =
-        zmk_keymap_layer_name(layer);
+    const char *name = zmk_keymap_layer_name(layer);
 
     if (name == NULL || name[0] == '\0') {
         name = "BASE";
     }
 
     lv_label_set_text(layer_label, name);
+
+    // 👇 Vuelve a alinear porque el ancho del texto cambió.
+    lv_obj_align(layer_label, LV_ALIGN_TOP_RIGHT, 0, 0);
 }
 
 
@@ -252,7 +254,7 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     lv_obj_set_style_text_font(
         wpm_text,
-        &lv_font_montserrat_10,
+        &lv_font_montserrat_14,
         LV_PART_MAIN
     );
 
@@ -264,7 +266,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_align(
         wpm_text,
         LV_ALIGN_BOTTOM_LEFT,
-        0,
+        2,
         0
     );
 
@@ -294,7 +296,7 @@ lv_obj_t *zmk_display_status_screen(void) {
 
     lv_obj_set_style_text_font(
         wpm_value_label,
-        &lv_font_montserrat_10,
+        &lv_font_montserrat_14,
         LV_PART_MAIN
     );
 
