@@ -131,7 +131,7 @@ lv_obj_t *zmk_display_status_screen(void) {
         layer_label,
         LV_ALIGN_TOP_RIGHT,
         2,
-        -1
+        -3
     );
 
     return screen;
