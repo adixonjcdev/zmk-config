@@ -3,16 +3,15 @@
 
 #include <zmk/display/widgets/layer_status.h>
 
-/* Widget oficial de ZMK */
+/* Widget oficial de ZMK para la capa activa */
 static struct zmk_widget_layer_status layer_widget;
 
 lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_t *screen = lv_obj_create(NULL);
 
     /*
-     * IMPORTANTE:
-     * En nuestro SSD1306 monocromático la polaridad
-     * efectiva está invertida.
+     * SSD1306 monocromático:
+     * en nuestro display la polaridad efectiva está invertida.
      *
      * WHITE lógico = píxel apagado
      * BLACK lógico = píxel encendido
@@ -32,7 +31,7 @@ lv_obj_t *zmk_display_status_screen(void) {
     );
 
     /*
-     * Título: SOFLE
+     * Título
      */
     lv_obj_t *title = lv_label_create(screen);
 
@@ -61,49 +60,12 @@ lv_obj_t *zmk_display_status_screen(void) {
     lv_obj_align(
         title,
         LV_ALIGN_TOP_LEFT,
-        4,
-        2
+        2,
+        0
     );
 
     /*
-     * Texto fijo: LAYER
-     */
-    lv_obj_t *layer_text = lv_label_create(screen);
-
-    lv_obj_remove_style_all(layer_text);
-
-    lv_obj_set_style_text_color(
-        layer_text,
-        lv_color_black(),
-        LV_PART_MAIN
-    );
-
-    lv_obj_set_style_text_opa(
-        layer_text,
-        LV_OPA_COVER,
-        LV_PART_MAIN
-    );
-
-    lv_obj_set_style_text_font(
-        layer_text,
-        &lv_font_montserrat_14,
-        LV_PART_MAIN
-    );
-
-    lv_label_set_text(layer_text, "LAYER");
-
-    lv_obj_align(
-        layer_text,
-        LV_ALIGN_BOTTOM_LEFT,
-        4,
-        -2
-    );
-
-    /*
-     * Widget dinámico oficial de ZMK.
-     *
-     * Este es el que cambiará:
-     * BASE -> LOWER -> RAISE -> ADJUST
+     * Widget oficial de capa activa.
      */
     zmk_widget_layer_status_init(
         &layer_widget,
@@ -114,32 +76,18 @@ lv_obj_t *zmk_display_status_screen(void) {
         zmk_widget_layer_status_obj(&layer_widget);
 
     /*
-     * Quitamos cualquier estilo visual que no nos interese
-     * y aplicamos nuestra polaridad.
+     * Lo posicionamos en la parte inferior derecha.
+     *
+     * IMPORTANTE:
+     * No intentamos modificar todavía los hijos internos
+     * del widget. Primero queremos ver exactamente cuánto
+     * espacio ocupa por sí mismo.
      */
-    lv_obj_set_style_text_color(
-        layer_obj,
-        lv_color_black(),
-        LV_PART_MAIN
-    );
-
-    lv_obj_set_style_text_opa(
-        layer_obj,
-        LV_OPA_COVER,
-        LV_PART_MAIN
-    );
-
-    lv_obj_set_style_text_font(
-        layer_obj,
-        &lv_font_montserrat_14,
-        LV_PART_MAIN
-    );
-
     lv_obj_align(
         layer_obj,
         LV_ALIGN_BOTTOM_RIGHT,
-        -4,
-        -2
+        -2,
+        -1
     );
 
     return screen;
