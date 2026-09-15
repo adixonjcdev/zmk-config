@@ -1,3 +1,5 @@
+name: zmk-vfx-sofle-oled
+
 build:
   cmake: .
   kconfig: Kconfig

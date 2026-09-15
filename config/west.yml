@@ -11,4 +11,3 @@ manifest:
 
   self:
     path: config
-    west-commands: []
