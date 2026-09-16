@@ -15,6 +15,7 @@
 #define RAISE 2
 #define ADJUST 3
 #define NUMPAD 4
+#define SYSTEM 5
 
 / {
 
@@ -33,11 +34,11 @@
         default_layer {
             display-name = "DEFAULT";
 // ------------------------------------------------------------------------------------------------------------
-// |   `   |  1  |  2  |  3   |  4   |  5   |                   |  6   |  7    |  8    |  9   |   0   |       |
-// |  ESC  |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   | BKSPC |
+// |  ESC  |  1  |  2  |  3   |  4   |  5   |                   |  6   |  7    |  8    |  9   |   0   |       |
+// |   `   |  Q  |  W  |  E   |  R   |  T   |                   |  Y   |  U    |  I    |  O   |   P   | BKSPC |
 // |  TAB  |  A  |  S  |  D   |  F   |  G   |                   |  H   |  J    |  K    |  L   |   ;   |   '   |
 // | SHIFT |  Z  |  X  |  C   |  V   |  B   |  MUTE  |  |       |  N   |  M    |  ,    |  .   |   /   | SHIFT |
-//               | GUI | ALT  | CTRL | LOWER|  ENTER |  | SPACE | RAISE| CTRL  | ALT   | GUI  |
+//               | GUI | ALT  | CTRL | LOWER|  SPACE |  | ENTER | RAISE| CTRL  | ALT   | GUI  |
             bindings = <
 &kp ESC &kp N1 &kp N2   &kp N3   &kp N4    &kp N5                           &kp N6 &kp N7    &kp N8    &kp N9   &kp N0   &none
 &kp GRAVE &kp Q  &kp W    &kp E    &kp R     &kp T                            &kp Y  &kp U     &kp I     &kp O    &kp P    &kp BSPC
@@ -72,16 +73,16 @@
         raise_layer {
             display-name = "RAISE";
 // ------------------------------------------------------------------------------------------------------------
-// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                |      |      |       |      |       |       |
+// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                | INIT |      |       |      |       |       |
 // |       | INS  | PSCR | GUI   |       |      |                | PGUP |      |   ^   |      |       |       |
 // |       | ALT  | CTRL | SHIFT |       | CAPS |                | PGDN |   <- |   v   |  ->  |  DEL  | BKSPC |
-// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      |      |      |       |      |       |       |
+// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      | END  |      |       |      |       |       |
 //                |      |       |       |      |      |  |      |      |      |       |      |
             bindings = <
-&bt BT_CLR &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                  &trans    &trans    &trans   &trans    &trans  &trans
-&trans     &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                        &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
-&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                      &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
-&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &trans    &trans    &trans   &trans    &trans  &trans
+&trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                     &kp HOME  &trans    &trans   &trans    &trans  &trans
+&bt BT_CLR &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                           &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
+&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                         &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
+&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &kp END    &trans    &trans   &trans    &trans  &trans
                         &trans       &trans       &trans       &trans           &trans  &trans  &trans    &trans    &trans   &trans
             >;
 
@@ -89,31 +90,31 @@
         };
 
 // ----------------------------------------------------------------------------------------------------------------------------
-// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |      |      |       |      |       |       |
-// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |      |      |       |      |       |       |
-// |        | RGB_BRD | RGB_BRI |         |         |         |                  |      |      |       | CAPS |  NUM  | SCRL  |
-// |        |         |         |         |         |         | RGB_TOG | |      |      |      |       |      |       |       |
-//                    |         |         |         |         |         | |      |      |      |       |      |
+// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |               |  OPEN_VSC      |      |       |      |       |       |
+// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |               |                |      |       |      |       |       |
+// |        | RGB_BRD | RGB_BRI |         |         |         |               |                |      |       | CAPS |  NUM  | SCRL  |
+// |        |         |         |         |         |         | NONE | |      | OPEN_TERMINAL  |      |       |      |       |       |
+//                    |         |         |         |         |      | |      |                |      |       |      |
         adjust_layer {
            display-name = "ADJUST";
            bindings = <
-&bt BT_CLR        &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3    &bt BT_SEL 4                            &none &none &none &none &none &none
-&ext_power EP_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_EFF                         &none &none &none &none &none &none
-&none             &rgb_ug RGB_BRD &rgb_ug RGB_BRI &none           &none           &none                                   &none &none &none &none &kp KP_NUM &none
-&none             &none           &none           &none           &none           &none            &rgb_ug RGB_TOG &none  &none &none &none &none &none &none
-                                  &none           &none           &none           &none            &none           &none  &none &none &none &none
+&bt BT_CLR        &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3    &bt BT_SEL 4                            &none           &none &none &none &none &none
+&ext_power EP_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_EFF                         &none           &none &none &none &none &none
+&none             &rgb_ug RGB_BRD &rgb_ug RGB_BRI &none           &none           &none                                   &kp LC(LS(T))   &none &none &none &none &none
+&none             &none           &none           &none           &none           &none            &none &none  &none     &kp LC(LALT(T)) &none &none &none &none
+                                  &none           &none           &none           &none            &none                  &none           &none &none &none &none
     >;
 };
-
+          
 numpad_layer {
     display-name = "NUMPAD";
 
 // ------------------------------------------------------------------------------------------------------------
 // |       |     |     |     |     |     |                   | NUM |  /  |  *  |  -  |     |       |
 // |       |     |     |     |     |     |                   |  7  |  8  |  9  |  +  |     |       |
-// |       |     |     |     |     |     |                   |  4  |  5  |  6  |  +  |     |       |
-// |       |     |     |     |     |     |        |  |       |  1  |  2  |  3  | ENT |     |       |
-//               |     |     |     |     |        |  |       |     |  0  |  .  | ENT |
+// |       |     |     |     |     |     |                   |  4  |  5  |  6  |     |     |       |
+// |       |     |     |     |     |     |        |  |       |  1  |  2  |  3  |     |     |       |
+//               |     |     |     |     |        |  |       |     |  0  |  .  |     |
 // ------------------------------------------------------------------------------------------------------------
 
     bindings = <
@@ -122,6 +123,42 @@ numpad_layer {
 &trans &trans &trans &trans &trans &trans                         &kp KP_N4     &kp KP_N5     &kp KP_N6       &trans       &trans       &trans
 &trans &trans &trans &trans &trans &trans &trans &tog NUMPAD      &kp KP_N1     &kp KP_N2     &kp KP_N3       &trans       &trans       &trans
                      &trans &trans &trans &trans &trans &trans    &trans        &kp KP_N0     &kp KP_DOT      &trans
+    >;
+
+    sensor-bindings = <
+        &inc_dec_kp C_VOL_UP C_VOL_DN
+        &inc_dec_kp PG_UP PG_DN
+    >;
+};
+ system_layer {
+    display-name = "SYSTEM";
+
+// ------------------------------------------------------------------------------------------------------------
+// |        |        |        |        |        |        |                   |        |        |        |        |        |
+// |        |        |        | FILES  |        |  TERM  |                   |        |        |        |        | PWRSHL |
+// |        |        |        |        |        |  GIT   |                   |        |        |        |        |        |
+// |        |        |        |  CMD   | VSCODE | BROWSER|        |  |       |        |        |        |        |        |
+//                   |        |        |        |        |        |  |       |        |        |        |        |
+//
+// DISPARADORES PERSONALIZADOS:
+//
+// FILES   = Ctrl + Alt + Shift + E  -> Explorador de archivos
+// TERM    = Ctrl + Alt + Shift + T  -> Windows Terminal
+// PWRSHL  = Ctrl + Alt + Shift + P  -> PowerShell
+// GIT     = Ctrl + Alt + Shift + G  -> Git Bash
+// CMD     = Ctrl + Alt + Shift + C  -> Command Prompt
+// VSCODE  = Ctrl + Alt + Shift + V  -> Visual Studio Code
+// BROWSER = Ctrl + Alt + Shift + B  -> Navegador
+//
+// Todas las demás teclas son transparentes y conservan el comportamiento de BASE.
+// ------------------------------------------------------------------------------------------------------------
+
+    bindings = <
+&trans &trans &trans                &trans                 &trans                 &trans                                      &trans &trans &trans &trans &trans                 &trans
+&trans &trans &trans                &kp LC(LALT(LS(E)))    &trans                 &kp LC(LALT(LS(T)))                         &trans &trans &trans &trans &kp LC(LALT(LS(P)))    &trans
+&trans &trans &trans                &trans                 &trans                 &kp LC(LALT(LS(G)))                         &trans &trans &trans &trans &trans                 &trans
+&trans &trans &trans                &kp LC(LALT(LS(C)))    &kp LC(LALT(LS(V)))    &kp LC(LALT(LS(B)))    &trans &trans      &trans &trans &trans &trans &trans &trans
+                   &trans &trans    &trans                 &trans                 &trans                 &trans &trans      &trans &trans &trans
     >;
 
     sensor-bindings = <
