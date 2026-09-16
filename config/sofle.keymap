@@ -15,7 +15,6 @@
 #define RAISE 2
 #define ADJUST 3
 #define NUMPAD 4
-#define SYSTEM 5
 
 / {
 
@@ -73,16 +72,16 @@
         raise_layer {
             display-name = "RAISE";
 // ------------------------------------------------------------------------------------------------------------
-// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                | INIT |      |       |      |       |       |
+// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                |      |      |       |      |       |       |
 // |       | INS  | PSCR | GUI   |       |      |                | PGUP |      |   ^   |      |       |       |
 // |       | ALT  | CTRL | SHIFT |       | CAPS |                | PGDN |   <- |   v   |  ->  |  DEL  | BKSPC |
-// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      | END  |      |       |      |       |       |
+// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      |      |      |       |      |       |       |
 //                |      |       |       |      |      |  |      |      |      |       |      |
             bindings = <
-&trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                     &kp HOME  &trans    &trans   &trans    &trans  &trans
-&bt BT_CLR &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                           &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
-&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                         &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
-&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &kp END    &trans    &trans   &trans    &trans  &trans
+&trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                  &trans    &trans    &trans   &trans    &trans  &trans
+&bt BT_CLR &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                        &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
+&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                      &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
+&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &trans    &trans    &trans   &trans    &trans  &trans
                         &trans       &trans       &trans       &trans           &trans  &trans  &trans    &trans    &trans   &trans
             >;
 
@@ -90,11 +89,11 @@
         };
 
 // ----------------------------------------------------------------------------------------------------------------------------
-// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |               |  OPEN_VSC      |      |       |      |       |       |
-// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |               |                |      |       |      |       |       |
-// |        | RGB_BRD | RGB_BRI |         |         |         |               |                |      |       | CAPS |  NUM  | SCRL  |
-// |        |         |         |         |         |         | NONE | |      | OPEN_TERMINAL  |      |       |      |       |       |
-//                    |         |         |         |         |      | |      |                |      |       |      |
+// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |  OPEN_VSC      |      |       |      |       |       |
+// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |                |      |       |      |       |       |
+// |        | RGB_BRD | RGB_BRI |         |         |         |                  |                |      |       | CAPS |  NUM  | SCRL  |
+// |        |         |         |         |         |         | RGB_TOG | |      | OPEN_TERMINAL  |      |       |      |       |       |
+//                    |         |         |         |         |         | |      |                |      |       |      |
         adjust_layer {
            display-name = "ADJUST";
            bindings = <
@@ -130,7 +129,6 @@ numpad_layer {
         &inc_dec_kp PG_UP PG_DN
     >;
 };
- 
 
     };
 };
