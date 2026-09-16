@@ -130,42 +130,7 @@ numpad_layer {
         &inc_dec_kp PG_UP PG_DN
     >;
 };
- system_layer {
-    display-name = "SYSTEM";
-
-// ------------------------------------------------------------------------------------------------------------
-// |        |        |        |        |        |        |                   |        |        |        |        |        |
-// |        |        |        | FILES  |        |  TERM  |                   |        |        |        |        | PWRSHL |
-// |        |        |        |        |        |  GIT   |                   |        |        |        |        |        |
-// |        |        |        |  CMD   | VSCODE | BROWSER|        |  |       |        |        |        |        |        |
-//                   |        |        |        |        |        |  |       |        |        |        |        |
-//
-// DISPARADORES PERSONALIZADOS:
-//
-// FILES   = Ctrl + Alt + Shift + E  -> Explorador de archivos
-// TERM    = Ctrl + Alt + Shift + T  -> Windows Terminal
-// PWRSHL  = Ctrl + Alt + Shift + P  -> PowerShell
-// GIT     = Ctrl + Alt + Shift + G  -> Git Bash
-// CMD     = Ctrl + Alt + Shift + C  -> Command Prompt
-// VSCODE  = Ctrl + Alt + Shift + V  -> Visual Studio Code
-// BROWSER = Ctrl + Alt + Shift + B  -> Navegador
-//
-// Todas las demás teclas son transparentes y conservan el comportamiento de BASE.
-// ------------------------------------------------------------------------------------------------------------
-
-    bindings = <
-&trans &trans &trans                &trans                 &trans                 &trans                                      &trans &trans &trans &trans &trans                 &trans
-&trans &trans &trans                &kp LC(LALT(LS(E)))    &trans                 &kp LC(LALT(LS(T)))                         &trans &trans &trans &trans &kp LC(LALT(LS(P)))    &trans
-&trans &trans &trans                &trans                 &trans                 &kp LC(LALT(LS(G)))                         &trans &trans &trans &trans &trans                 &trans
-&trans &trans &trans                &kp LC(LALT(LS(C)))    &kp LC(LALT(LS(V)))    &kp LC(LALT(LS(B)))    &trans &trans      &trans &trans &trans &trans &trans &trans
-                   &trans &trans    &trans                 &trans                 &trans                 &trans &trans      &trans &trans &trans
-    >;
-
-    sensor-bindings = <
-        &inc_dec_kp C_VOL_UP C_VOL_DN
-        &inc_dec_kp PG_UP PG_DN
-    >;
-};
+ 
 
     };
 };
