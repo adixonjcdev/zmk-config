@@ -15,6 +15,7 @@
 #define RAISE 2
 #define ADJUST 3
 #define NUMPAD 4
+#define SYSTEM 5
 
 / {
 
@@ -39,7 +40,7 @@
 // | SHIFT |  Z  |  X  |  C   |  V   |  B   |  MUTE  |  |       |  N   |  M    |  ,    |  .   |   /   | SHIFT |
 //               | GUI | ALT  | CTRL | LOWER|  SPACE |  | ENTER | RAISE| CTRL  | ALT   | GUI  |
             bindings = <
-&kp ESC &kp N1 &kp N2   &kp N3   &kp N4    &kp N5                           &kp N6 &kp N7    &kp N8    &kp N9   &kp N0   &none
+&kp ESC &kp N1 &kp N2   &kp N3   &kp N4    &kp N5                           &kp N6 &kp N7    &kp N8    &kp N9   &kp N0   &mo SYSTEM
 &kp GRAVE &kp Q  &kp W    &kp E    &kp R     &kp T                            &kp Y  &kp U     &kp I     &kp O    &kp P    &kp BSPC
 &kp TAB   &kp A  &kp S    &kp D    &kp F     &kp G                            &kp H  &kp J     &kp K     &kp L    &kp SEMI &kp SQT
 &kp LSHFT &kp Z  &kp X    &kp C    &kp V     &kp B      &kp C_MUTE &tog NUMPAD      &kp N  &kp M     &kp COMMA &kp DOT  &kp FSLH &kp RSHFT
@@ -72,16 +73,16 @@
         raise_layer {
             display-name = "RAISE";
 // ------------------------------------------------------------------------------------------------------------
-// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                |      |      |       |      |       |       |
+// | BTCLR | BT1  | BT2  |  BT3  |  BT4  |  BT5 |                | INIT |      |       |      |       |       |
 // |       | INS  | PSCR | GUI   |       |      |                | PGUP |      |   ^   |      |       |       |
 // |       | ALT  | CTRL | SHIFT |       | CAPS |                | PGDN |   <- |   v   |  ->  |  DEL  | BKSPC |
-// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      |      |      |       |      |       |       |
+// |       | UNDO | CUT  | COPY  | PASTE |      |      |  |      | END  |      |       |      |       |       |
 //                |      |       |       |      |      |  |      |      |      |       |      |
             bindings = <
-&trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                  &trans    &trans    &trans   &trans    &trans  &trans
-&bt BT_CLR &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                        &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
-&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                      &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
-&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &trans    &trans    &trans   &trans    &trans  &trans
+&trans     &bt BT_SEL 0 &bt BT_SEL 1 &bt BT_SEL 2 &bt BT_SEL 3 &bt BT_SEL 4                     &kp HOME  &trans    &trans   &trans    &trans  &trans
+&bt BT_CLR &kp INS      &kp PSCRN    &kp K_CMENU  &trans       &trans                           &kp PG_UP &trans    &kp UP   &trans    &kp N0  &trans
+&trans     &kp LALT     &kp LCTRL    &kp LSHFT    &trans       &kp CLCK                         &kp PG_DN &kp LEFT  &kp DOWN &kp RIGHT &kp DEL &kp BSPC
+&trans     &kp LC(Z)    &kp LC(X)    &kp LC(C)    &kp LC(V)    &kp LC(Y)        &trans  &trans  &kp END    &trans    &trans   &trans    &trans  &trans
                         &trans       &trans       &trans       &trans           &trans  &trans  &trans    &trans    &trans   &trans
             >;
 
@@ -89,18 +90,18 @@
         };
 
 // ----------------------------------------------------------------------------------------------------------------------------
-// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |                  |  OPEN_VSC      |      |       |      |       |       |
-// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |                  |                |      |       |      |       |       |
-// |        | RGB_BRD | RGB_BRI |         |         |         |                  |                |      |       | CAPS |  NUM  | SCRL  |
-// |        |         |         |         |         |         | RGB_TOG | |      | OPEN_TERMINAL  |      |       |      |       |       |
-//                    |         |         |         |         |         | |      |                |      |       |      |
+// | BTCLR  |  BT1    |  BT2    |   BT3   |   BT4   |   BT5   |               |  OPEN_VSC      |      |       |      |       |       |
+// | EXTPWR | RGB_HUD | RGB_HUI | RGB_SAD | RGB_SAI | RGB_EFF |               |                |      |       |      |       |       |
+// |        | RGB_BRD | RGB_BRI |         |         |         |               |                |      |       | CAPS |  NUM  | SCRL  |
+// |        |         |         |         |         |         | NONE | |      | OPEN_TERMINAL  |      |       |      |       |       |
+//                    |         |         |         |         |      | |      |                |      |       |      |
         adjust_layer {
            display-name = "ADJUST";
            bindings = <
 &bt BT_CLR        &bt BT_SEL 0    &bt BT_SEL 1    &bt BT_SEL 2    &bt BT_SEL 3    &bt BT_SEL 4                            &none           &none &none &none &none &none
 &ext_power EP_TOG &rgb_ug RGB_HUD &rgb_ug RGB_HUI &rgb_ug RGB_SAD &rgb_ug RGB_SAI &rgb_ug RGB_EFF                         &none           &none &none &none &none &none
 &none             &rgb_ug RGB_BRD &rgb_ug RGB_BRI &none           &none           &none                                   &kp LC(LS(T))   &none &none &none &none &none
-&none             &none           &none           &none           &none           &none            &none &none  &none     &kp LC(LALT(T)) &none &none &none &none
+&none             &none           &none           &none           &none           &none            &none &none  &none     &kp LC(LA(T))   &none &none &none &none
                                   &none           &none           &none           &none            &none                  &none           &none &none &none &none
     >;
 };
@@ -129,6 +130,42 @@ numpad_layer {
         &inc_dec_kp PG_UP PG_DN
     >;
 };
+ 
+system_layer {
+    display-name = "SYSTEM";
 
+// ------------------------------------------------------------------------------------------------------------
+// |        |        |        |        |        |        |                   |        |        |        |        |        |
+// |        |        |        | FILES  |        |  TERM  |                   |        |        |        |        | PWRSHL |
+// |        |        |        |        |        |  GIT   |                   |        |        |        |        |        |
+// |        |        |        |  CMD   | VSCODE | BROWSER|        |  |       |        |        |        |        |        |
+//                   |        |        |        |        |        |  |       |        |        |        |        |
+//
+// DISPARADORES PERSONALIZADOS:
+//
+// FILES   = Ctrl + Alt + Shift + E  -> Explorador de archivos
+// TERM    = Ctrl + Alt + Shift + T  -> Windows Terminal
+// PWRSHL  = Ctrl + Alt + Shift + P  -> PowerShell
+// GIT     = Ctrl + Alt + Shift + G  -> Git Bash
+// CMD     = Ctrl + Alt + Shift + C  -> Command Prompt
+// VSCODE  = Ctrl + Alt + Shift + V  -> Visual Studio Code
+// BROWSER = Ctrl + Alt + Shift + B  -> Navegador
+//
+// Todas las demás teclas son transparentes y conservan el comportamiento de BASE.
+// ------------------------------------------------------------------------------------------------------------
+
+    bindings = <
+&trans &trans &trans &trans            &trans             &trans                                      &trans &trans &trans &trans &trans            &trans
+&trans &trans &trans &kp LC(LA(LS(E))) &trans             &kp LC(LA(LS(T)))                           &trans &trans &trans &trans &kp LC(LA(LS(P))) &trans
+&trans &trans &trans &trans            &trans             &kp LC(LA(LS(G)))                           &trans &trans &trans &trans &trans            &trans
+&trans &trans &trans &kp LC(LA(LS(C))) &kp LC(LA(LS(V)))  &kp LC(LA(LS(B)))    &trans     &trans      &trans &trans &trans &trans &trans            &trans
+              &trans &trans            &trans             &trans               &trans     &trans      &trans &trans &trans &trans
+    >;
+
+    sensor-bindings = <
+        &inc_dec_kp C_VOL_UP C_VOL_DN
+        &inc_dec_kp PG_UP PG_DN
+    >;
+};
     };
 };
