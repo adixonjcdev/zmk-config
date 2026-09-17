@@ -1,0 +1,12 @@
+config SOFLE_OLED
+    bool "Sofle custom OLED"
+    default y
+    depends on ZMK_DISPLAY
+
+config SOFLE_OLED_LEFT
+    bool "Sofle left OLED"
+    depends on SOFLE_OLED
+
+config SOFLE_OLED_RIGHT
+    bool "Sofle right OLED"
+    depends on SOFLE_OLED

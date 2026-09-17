@@ -3,20 +3,6 @@
 / {
     chosen {
         zmk,kscan = &kscan0;
-        zmk,underglow = &led_strip;
-    };
-
-    led_strip: led_strip@0 {
-        compatible = "worldsemi,ws2812-spi";
-        label = "LED_STRIP";
-
-        /* ⚠️ Mikoto v7.2 suele usar P0.15 o P0.06 para datos RGB */
-        data-gpios = <&gpio0 15 GPIO_ACTIVE_HIGH>;
-
-        spi-max-frequency = <4000000>;
-        color-mapping = <LED_COLOR_MAPPING_RGB>;
-        chain-length = <72>;
-        status = "okay";
     };
 };
 
